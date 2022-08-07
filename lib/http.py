@@ -22,10 +22,6 @@ class http():
 		except sock.gaierror as error:
 			srvr_err("The address tuple could not be translated to a valid socket address: %s" %str(self.addr))
 			raise error
-		# Server Environment Variables
-		self.defaultenv = {
-			""
-		}
 		self.wrncount = 0
 		self.closed = False
 		self.setflags()
