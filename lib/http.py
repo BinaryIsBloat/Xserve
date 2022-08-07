@@ -1,7 +1,7 @@
 import socket as sock, os
 from .console import *  # Logging
 from .base import *     # Special Exceptions
-from . import streams  # Buffers & Streams
+from . import streams   # Buffers & Streams
 
 class http():
 	# Initialization Functions
