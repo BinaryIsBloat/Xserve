@@ -110,8 +110,11 @@ class http():
 			print("Client Error: Too many retries")
 			return 408
 
-	def returndata(self): # Should send response data to client
+	def senddata(self): # Should send response data to client
 		pass
+	
+	def returndata(self): # Should return the servers data buffer
+		return self.buffer
 
 	def storedata(self, storage): # Should flush a temporary buffer to a constant buffer on drive
 		pass
