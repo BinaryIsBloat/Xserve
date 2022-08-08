@@ -27,7 +27,7 @@ class http():
 		self.setflags()
 		return
 
-	def setflags(flags=None):
+	def setflags(self, flags=None):
 		if flags is None:
 			self.flags = {
 				"debug": True,        # May tweak certain operations to behave diffrently to test for hidden bugs in the code. Should never be enabled in release versions
