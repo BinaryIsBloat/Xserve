@@ -119,8 +119,8 @@ class http():
 	def storedata(self, storage): # Should flush a temporary buffer to a constant buffer on drive
 		pass
 
-	def freedata(self, storage):
-		pass
+	def freedata(self): # UnKnown
+		self.buffer.whipe()
 
 
 	# Logging Functions
