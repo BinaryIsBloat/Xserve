@@ -1,12 +1,12 @@
 # Full ToDo list for Xserve #
 
-Please expand the list if you see something important missing here. The list is also continuously updated, so please check upon it from time to time.
-Features that exist but that miss functionality or contain bugs have additional information inside the brackets. Working features are simply marked with OK.
-Features that don't exist yet and require further ellaboration also have attached information.
-Features marked UnKnown require further testing to determine their current state. Features which have been tested succesfully may be marked with OK, features which don't work with Broken.
-Features which contain known vulnerabilities should be marked with VULN URGENT and all collective ressources should be directed to fixing the issue immediately.
-Features which contain known vulnerabilities but are still in debug phase should be marked VULN without following URGENT, indicating that the issue may be fixed at a later point in time.
-A production release may only be created after all of the included features are marked OK and there is no dependency conflict.
+Please expand the list if you see something important missing here. The list is also continuously updated, so please check upon it from time to time.<br>
+Features that exist but that miss functionality or contain bugs have additional information inside the brackets. Working features are simply marked with OK.<br>
+Features that don't exist yet and require further ellaboration also have attached information.<br>
+Features marked UnKnown require further testing to determine their current state. Features which have been tested succesfully may be marked with OK, features which don't work with Broken.<br>
+Features which contain known vulnerabilities should be marked with VULN URGENT and all collective ressources should be directed to fixing the issue immediately.<br>
+Features which contain known vulnerabilities but are still in debug phase should be marked VULN without following URGENT, indicating that the issue may be fixed at a later point in time.<br>
+A production release may only be created after all of the included features are marked OK and there is no dependency conflict.<br>
 
 ## Libraries ##
 
