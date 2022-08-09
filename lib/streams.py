@@ -154,6 +154,17 @@ class datastream():
 			else:
 				self.write(data)
 
+	def __iter__(self):
+		self.seek(0)
+		return self
+
+	def __next__(self):
+		data = self.read(4096)
+		if data:
+			return data
+		else:
+			raise StopIteration()
+
 	def index(self, key, start=0, end=None): # UnKnown
 		if start < 0:
 			raise IndexError("Start byte may not be negative")

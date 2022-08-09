@@ -112,9 +112,11 @@ class http():
 			clnt_err("Too many retries")
 			return 408
 
-	def senddata(self): # Should send response data to client
+	def senddata(self, stream): # Should send response data to client
+		for chunk in stream:
+			self.client.send(chunk)
 		pass
-	
+
 	def returndata(self): # OK
 		return self.buffer
 
