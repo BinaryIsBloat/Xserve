@@ -108,7 +108,7 @@ class datastream():
 		else:
 			return len(self.stream)
 
-	def __contains__(self, key): # UnKnown
+	def _contains(self, key): # UnKnown
 		if not type(key) == bytes:
 			raise ValueError("Expected bytes as key value")
 		if self.hard:
@@ -117,14 +117,31 @@ class datastream():
 			self.stream.seek(0)
 			overlap = - (len(key))
 			while True:
+				position = self.stream.tell()
 				array = self.stream.read(4096)
 				if key in array:
-					return True
+					return position + array.index(key)
 				if self.stream.read(1) == b"":
-					return False
+					return None
 				self.stream.seek(overlap, 1)
 		else:
-			return key in self.stream
+			if key in self.stream:
+				return self.stream.index(key)
+			else:
+				return None
+
+	def __contains__(self, key): # UnKnown
+		if self._contains(key) is None:
+			return False
+		else:
+			return True
+
+	def index(self, key): # UnKnown
+		number = self._contains(key)
+		if number is None:
+			raise ValueError("\"%s\" is not in stream" %key)
+		else:
+			return number
 
 	def __str__(self): # OK
 		return f"<Xtraordinary Data Stream (byteoffset={self.offset}, lenght={self.__len__()}, has_data={self.__bool__()}, is_hard={self.hard})>"
