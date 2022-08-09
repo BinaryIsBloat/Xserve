@@ -39,7 +39,7 @@ class datastream():
 			startbyte = self.offset
 		received = bytearray(self._read(size, startbyte, endbyte))
 		if self.hard:
-			self.offset = received.tell()
+			self.offset = self.stream.tell()
 		return received
 
 	def _read(self, size, startbyte, endbyte): # UnKnown
