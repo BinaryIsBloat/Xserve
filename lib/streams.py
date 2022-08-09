@@ -123,7 +123,7 @@ class datastream():
 				array = self.stream.read(4096)
 				if key in array:
 					index = position + array.index(key)
-					if (end is not None) and (index - overlap > end):
+					if (end is None) or (index - overlap > end):
 						return index
 					else:
 						return None
