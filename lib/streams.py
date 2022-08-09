@@ -171,6 +171,7 @@ class datastream():
 
 	def __iter__(self): # OK
 		self.seek(0)
+		self.eof = False
 		return self
 
 	def __next__(self): # OK
@@ -183,15 +184,19 @@ class datastream():
 		elif self.mode == "lined":
 			data = bytearray()
 			while True:
-				prevlen = len(data)
 				data.extend(self.read(1))
 				if data[-1:None] == b"\n":
 					del data[-1]
 					if data[-1:None] == b"\r":
 						del data[-1]
 					return data
-				if prevlen == len(data):
-					raise StopIteration()
+				if self.__len__() == len(data):
+					if self.eof:
+						del self.eof
+						raise StopIteration()
+					else:
+						self.eof = True
+						return data
 		else: 
 			raise ValueError("Unknown iterator mode")
 
