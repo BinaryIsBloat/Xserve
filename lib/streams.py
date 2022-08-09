@@ -190,3 +190,8 @@ class datastream():
 
 	def __del__(self): # OK
 		self.flush()
+
+	def __call__(self, chunksize=None):
+		if chunksize is not None:
+			self.setchunksize(chunksize)
+		return self
