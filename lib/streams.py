@@ -72,7 +72,7 @@ class datastream():
 			self.stream.clear()
 		self.offset = 0
 
-	def flush(self):
+	def flush(self): # OK
 		if self.hard:
 			self.stream.close()
 		try:
@@ -80,7 +80,7 @@ class datastream():
 		except:
 			pass
 
-	def endswith(self, string):
+	def endswith(self, string): # UnKnown
 		string = bytes(string)
 		if self.hard:
 			self.stream.seek(-len(string), 2)
@@ -94,21 +94,21 @@ class datastream():
 			else:
 				return False
 
-	def __bool__(self):
+	def __bool__(self): # OK
 		if self.hard:
 			self.stream.seek(0)
 			return bool(self.stream.read(1))
 		else:
 			return bool(self.stream)
 
-	def __len__(self):
+	def __len__(self): # OK
 		if self.hard:
 			self.stream.seek(0, 2)
 			return self.stream.tell()
 		else:
 			return len(self.stream)
 
-	def __contains__(self, key):
+	def __contains__(self, key): # UnKnown
 		if not type(key) == bytes:
 			raise ValueError("Expected bytes as key value")
 		if self.hard:
