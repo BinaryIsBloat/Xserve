@@ -108,25 +108,31 @@ class datastream():
 		else:
 			return len(self.stream)
 
-	def _contains(self, key): # UnKnown
+	def _contains(self, key, start=0, end=None): # UnKnown
 		if not type(key) == bytes:
 			raise ValueError("Expected bytes as key value")
 		if self.hard:
 			if len(key) > 4095:
 				raise ValueError("Key is too long (expected less than 4096 bytes)")
-			self.stream.seek(0)
+			self.stream.seek(start)
 			overlap = - (len(key))
 			while True:
 				position = self.stream.tell()
+				if end is not None and position > end:
+					return None
 				array = self.stream.read(4096)
 				if key in array:
-					return position + array.index(key)
+					index = position + array.index(key)
+					if (index - overlap) > end:
+						return index
+					else:
+						return None
 				if self.stream.read(1) == b"":
 					return None
 				self.stream.seek(overlap, 1)
 		else:
 			if key in self.stream:
-				return self.stream.index(key)
+				return self.stream.index(key, start, end)
 			else:
 				return None
 
@@ -136,8 +142,12 @@ class datastream():
 		else:
 			return True
 
-	def index(self, key): # UnKnown
-		number = self._contains(key)
+	def index(self, key, start=0, end=None): # UnKnown
+		if start < 0:
+			raise IndexError("Start byte may not be negative")
+		if (end is not None) and (start > end):
+			raise IndexError("End byte may not be smaller than the start byte")
+		number = self._contains(key, start, end)
 		if number is None:
 			raise ValueError("%s is not in stream" %key)
 		else:
