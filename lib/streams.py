@@ -9,6 +9,7 @@ class datastream():
 			self.stream = bytearray()
 		self.offset = 0
 		self.setchunksize()
+		self.setitermode()
 
 	def write(self, data, offset=None): # UnKnown
 		if offset is None:
@@ -160,16 +161,39 @@ class datastream():
 			raise ValueError("Chunk size must be set to at least 1 or higher")
 		self.chunksize = size
 
+	def setitermode(self, mode="chunk"):
+		if mode == "chunk":
+			self.mode = "chunk"
+		elif mode == "lined":
+			self.mode = "lined"
+		else:
+			raise ValueError("Unknown iterator mode")
+
 	def __iter__(self): # OK
 		self.seek(0)
 		return self
 
 	def __next__(self): # OK
-		data = self.read(self.chunksize)
-		if data:
-			return data
-		else:
-			raise StopIteration()
+		if self.mode == "chunk":
+			data = self.read(self.chunksize)
+			if data:
+				return data
+			else:
+				raise StopIteration()
+		elif self.mode == "lined":
+			data = bytearray()
+			while True:
+				prevlen = len(data)
+				data.extend(self.read(1))
+				if data[-1] == b"\n":
+					del data[-1]
+					if data[-1] == b"\r":
+						del data[-1]
+					return data
+				if prevlen == len(data):
+					raise StopIteration()
+		else: 
+			raise ValueError("Unknown iterator mode")
 
 	def index(self, key, start=0, end=None): # UnKnown
 		if start < 0:
@@ -183,7 +207,7 @@ class datastream():
 			return number
 
 	def __str__(self): # OK
-		return f"<Xtraordinary Data Stream (byteoffset={self.offset}, lenght={self.__len__()}, has_data={self.__bool__()}, is_hard={self.hard}, chunk_size={self.chunksize})>"
+		return f"<Xtraordinary Data Stream (byteoffset={self.offset}, lenght={self.__len__()}, has_data={self.__bool__()}, is_hard={self.hard}, chunk_size={self.chunksize}, iterator_mode={self.mode})>"
 
 	def __repr__(self): # OK
 		return self.__str__()

@@ -1,4 +1,4 @@
-import socket as sock, os
+import socket as sock, os 
 from .console import *  # Logging
 from .base import *     # Special Exceptions
 from . import streams   # Buffers & Streams
@@ -114,7 +114,6 @@ class http():
 	def senddata(self, stream): # Should send response data to client
 		for chunk in stream:
 			self.client.send(chunk)
-		pass
 
 	def returndata(self): # OK
 		return self.buffer
