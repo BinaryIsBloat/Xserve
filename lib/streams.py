@@ -127,7 +127,7 @@ class datastream():
 			return key in self.stream
 
 	def __str__(self): # OK
-		return f"<Xtraordinary Data Stream (byteoffset={self.offset}, lenght={self.__len__()}, has_data={self.__bool__()})>"
+		return f"<Xtraordinary Data Stream (byteoffset={self.offset}, lenght={self.__len__()}, has_data={self.__bool__()}, is_hard={self.hard})>"
 
 	def __repr__(self): # OK
 		return self.__str__()
