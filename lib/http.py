@@ -92,7 +92,7 @@ class http():
 				else:
 					clnt_err("No data has been sent")
 					return 408
-			srvr_info("Performing data check")
+			srvr_inf("Performing data check")
 			if self.flags["eofmode"] == "LF":
 				if b"\r\n\r\n" in self.buffer or b"\n\n" in self.buffer:
 					clnt_srvr("Received EOF terminator")
@@ -101,12 +101,12 @@ class http():
 					if len(self.buffer) > self.flags["buffersize"]:
 						clnt_err("The data buffer was exhausted before an EOF string was sent")
 						return 413
-				clnt_info("No EOF string received")
+				clnt_inf("No EOF string received")
 				clnt_srvr("Expecting further data")
 			elif self.flags["eofmode"] == "Buffered":
 				if len(self.buffer) >= self.flags["buffersize"]:
-					srvr_info("The expected data buffer is full")
-					srvr_info("Closing data stream")
+					srvr_inf("The expected data buffer is full")
+					srvr_inf("Closing data stream")
 					return 0
 		else:
 			clnt_err("Too many retries")
