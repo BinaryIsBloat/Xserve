@@ -139,7 +139,7 @@ class datastream():
 	def index(self, key): # UnKnown
 		number = self._contains(key)
 		if number is None:
-			raise ValueError("\"%s\" is not in stream" %key)
+			raise ValueError("%s is not in stream" %key)
 		else:
 			return number
 
