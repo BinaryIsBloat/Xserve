@@ -115,12 +115,12 @@ class datastream():
 			if len(key) > 4095:
 				raise ValueError("Key is too long (expected less than 4096 bytes)")
 			self.stream.seek(0)
-			overlap = - (len(key) - 1)
+			overlap = - (len(key))
 			while True:
 				array = self.stream.read(4096)
 				if key in array:
 					return True
-				elif array == b"":
+				if self.stream.read(1) == b"":
 					return False
 				self.stream.seek(overlap, 1)
 		else:
