@@ -1,7 +1,7 @@
 import os, tempfile as tmp
 
 class datastream():
-	def __init__(self, hard=False):
+	def __init__(self, hard=False): # OK
 		self.hard = hard
 		if self.hard:
 			self.stream = tmp.TemporaryFile(suffix=".xserver-buffer")
@@ -9,7 +9,7 @@ class datastream():
 			self.stream = bytearray()
 		self.offset = 0
 
-	def write(self, data, offset=None):
+	def write(self, data, offset=None): # UnKnown
 		if offset is None:
 			offset = self.offset
 		if self.hard:
@@ -20,7 +20,7 @@ class datastream():
 			self.offset = offset + len(data)
 		return self.offset
 
-	def seek(self, offset, whence=0):
+	def seek(self, offset, whence=0): # UnKnown
 		if whence == 0:
 			self.offset = offset
 		elif whence == 1:
@@ -31,10 +31,10 @@ class datastream():
 			raise ValueError("Unknown whence: %s" %whence)
 		return self.offset
 	
-	def tell(self):
+	def tell(self): # OK, may conflict with incorrectly set offset by UnKnown functions
 		return self.offset
 
-	def read(self, size=None, startbyte=None, endbyte=None):
+	def read(self, size=None, startbyte=None, endbyte=None): # UnKnown with dependency _read
 		if startbyte is None:
 			startbyte = self.offset
 		received = bytearray(self._read(size, startbyte, endbyte))
@@ -42,7 +42,7 @@ class datastream():
 			self.offset = received.tell()
 		return received
 
-	def _read(self, size, startbyte, endbyte):
+	def _read(self, size, startbyte, endbyte): # UnKnown
 		if self.hard:
 			self.stream.seek(startbyte)
 			if endbyte is None:
@@ -64,7 +64,7 @@ class datastream():
 				self.offset = endbyte
 				return self.stream[startbyte:endbyte]
 
-	def whipe(self):
+	def whipe(self): # OK
 		if self.hard:
 			self.stream.seek(0)
 			self.stream.truncate()
@@ -126,11 +126,11 @@ class datastream():
 		else:
 			return key in self.stream
 
-	def __str__(self):
+	def __str__(self): # OK
 		return f"<Xtraordinary Data Stream (byteoffset={self.offset}, lenght={self.__len__()}, has_data={self.__bool__()})>"
 
-	def __repr__(self):
+	def __repr__(self): # OK
 		return self.__str__()
 
-	def __del__(self):
+	def __del__(self): # OK
 		self.flush()

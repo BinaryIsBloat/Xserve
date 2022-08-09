@@ -87,7 +87,7 @@ class http():
 				clnt_srvr("No data in socket after waiting for %s seconds" %self.flags["timeout"])
 				srvr_inf("Checking for existing previous data")
 				if data:
-					print(f"Server Info: Data buffer not empty, retry {retrycount} / {retries}")
+					print("Server Info: Data buffer not empty, retry %s / %s" %(retrycount, self.flags["retrylimit"]))
 					continue
 				else:
 					print("Client Error: No data has been sent")
