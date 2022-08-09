@@ -30,7 +30,7 @@ class datastream():
 		else:
 			raise ValueError("Unknown whence: %s" %whence)
 		return self.offset
-	
+
 	def tell(self): # OK, may conflict with incorrectly set offset by UnKnown functions
 		return self.offset
 

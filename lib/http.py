@@ -70,7 +70,7 @@ class http():
 
 
 	# Data Functions
-	def getdata(self): # Should recieve data from client
+	def getdata(self): # UnKnown, receives data from client and returns HTTP status code
 		self.client.settimeout(self.flags["timeout"])
 		self.buffer = streams.datastream(self.flags["hardbuffer"])
 		retrycount = 0
@@ -87,28 +87,29 @@ class http():
 				clnt_srvr("No data in socket after waiting for %s seconds" %self.flags["timeout"])
 				srvr_inf("Checking for existing previous data")
 				if data:
-					print("Server Info: Data buffer not empty, retry %s / %s" %(retrycount, self.flags["retrylimit"]))
+					srvr_inf("Data buffer not empty, retry %s / %s" %(retrycount, self.flags["retrylimit"]))
 					continue
 				else:
-					print("Client Error: No data has been sent")
+					clnt_err("No data has been sent")
 					return 408
-			print("Server Info: Performing data check")
+			srvr_info("Performing data check")
 			if self.flags["eofmode"] == "LF":
 				if b"\r\n\r\n" in self.buffer or b"\n\n" in self.buffer:
-					print("Client => Server: Received EOF string")
+					clnt_srvr("Received EOF terminator")
 					return 0
-				if len(self.data) > buffersize:
-					print("Client Error: The data buffer was exhausted before an EOF string was sent")
-					return 413
-				print("Client Info: No EOF string received")
-				print("Client => Server: Expecting further data")
-			elif eofmode == "buffer":
-				if len(self.data) >= buffersize:
-					print("Server Info: The expected data buffer is full")
-					print("Server Info: Closing data stream")
+				if self.flags["buffersize"] is not None:
+					if len(self.buffer) > self.flags["buffersize"]:
+						clnt_err("The data buffer was exhausted before an EOF string was sent")
+						return 413
+				clnt_info("No EOF string received")
+				clnt_srvr("Expecting further data")
+			elif self.flags["eofmode"] == "Buffered":
+				if len(self.buffer) >= self.flags["buffersize"]:
+					srvr_info("The expected data buffer is full")
+					srvr_info("Closing data stream")
 					return 0
 		else:
-			print("Client Error: Too many retries")
+			clnt_err("Too many retries")
 			return 408
 
 	def senddata(self): # Should send response data to client
