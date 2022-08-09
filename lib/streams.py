@@ -185,9 +185,9 @@ class datastream():
 			while True:
 				prevlen = len(data)
 				data.extend(self.read(1))
-				if data[-1] == b"\n":
+				if data[-1:None] == b"\n":
 					del data[-1]
-					if data[-1] == b"\r":
+					if data[-1:None] == b"\r":
 						del data[-1]
 					return data
 				if prevlen == len(data):
