@@ -184,13 +184,14 @@ class datastream():
 		elif self.mode == "lined":
 			data = bytearray()
 			while True:
+				prevlen = len(data)
 				data.extend(self.read(1))
 				if data[-1:None] == b"\n":
 					del data[-1]
 					if data[-1:None] == b"\r":
 						del data[-1]
 					return data
-				if self.__len__() == len(data):
+				if prevlen == len(data):
 					if self.eof:
 						del self.eof
 						raise StopIteration()
