@@ -156,7 +156,7 @@ class datastream():
 				self.write(data)
 
 	def setchunksize(self, size=4096): # OK
-		if size > 1:
+		if size < 1:
 			raise ValueError("Chunk size must be set to at least 1 or higher")
 		self.chunksize = size
 
