@@ -8,6 +8,7 @@ class datastream():
 		else:
 			self.stream = bytearray()
 		self.offset = 0
+		self.setchunksize()
 
 	def write(self, data, offset=None): # UnKnown
 		if offset is None:
@@ -112,7 +113,7 @@ class datastream():
 		if not type(key) == bytes:
 			raise ValueError("Expected bytes as key value")
 		if self.hard:
-			if len(key) > 4095:
+			if len(key) >= self.chunksize:
 				raise ValueError("Key is too long (expected less than 4096 bytes)")
 			self.stream.seek(start)
 			overlap = - (len(key))
@@ -120,7 +121,7 @@ class datastream():
 				position = self.stream.tell()
 				if end is not None and position > end:
 					return None
-				array = self.stream.read(4096)
+				array = self.stream.read(self.chunksize)
 				if key in array:
 					index = position + array.index(key)
 					if (end is None) or (index - overlap > end):
@@ -147,19 +148,24 @@ class datastream():
 			self.whipe()
 		file.seek(0)
 		while True:
-			data = file.read(4096)
+			data = file.read(self.chunksize)
 			if data == b"":
 				file.close()
 				return
 			else:
 				self.write(data)
 
+	def setchunksize(self, size=4096):
+		if size > 1:
+			raise ValueError("Chunk size must be set to at least 1 or higher")
+		self.chunksize = size
+
 	def __iter__(self):
 		self.seek(0)
 		return self
 
 	def __next__(self):
-		data = self.read(4096)
+		data = self.read(self.chunksize)
 		if data:
 			return data
 		else:
@@ -177,7 +183,7 @@ class datastream():
 			return number
 
 	def __str__(self): # OK
-		return f"<Xtraordinary Data Stream (byteoffset={self.offset}, lenght={self.__len__()}, has_data={self.__bool__()}, is_hard={self.hard})>"
+		return f"<Xtraordinary Data Stream (byteoffset={self.offset}, lenght={self.__len__()}, has_data={self.__bool__()}, is_hard={self.hard}, chunk_size={self.chunksize})>"
 
 	def __repr__(self): # OK
 		return self.__str__()
