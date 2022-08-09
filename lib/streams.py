@@ -108,6 +108,24 @@ class datastream():
 		else:
 			return len(self.stream)
 
+	def __contains__(self, key):
+		if not type(key) == bytes:
+			raise ValueError("Expected bytes as key value")
+		if self.hard:
+			if len(key) > 4095:
+				raise ValueError("Key is too long (expected less than 4096 bytes)")
+			self.stream.seek(0)
+			overlap = - (len(key) - 1)
+			while True:
+				array = self.stream.read(4096)
+				if key in array:
+					return True
+				elif array == b"":
+					return False
+				self.stream.seek(overlap, 1)
+		else:
+			return key in self.stream
+
 	def __str__(self):
 		return f"<Xtraordinary Data Stream (byteoffset={self.offset}, lenght={self.__len__()}, has_data={self.__bool__()})>"
 

@@ -26,4 +26,4 @@ A production release may only be created after all of the included features are 
  - [ ] Create data send function (Should return data to the client)
  - [ ] Create data store function (Should store a data buffer to a file on disk)
  - [x] Create data return function (OK, may need expansion later)
- - [x] Create data whipe function (UnKnown, should clear the buffer)
+ - [x] Create data whipe function (OK)

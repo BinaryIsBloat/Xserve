@@ -27,13 +27,14 @@ class http():
 		self.setflags()
 		return
 
-	def setflags(self, flags=None):
+	def setflags(self, flags=None): # OK, constantly updated
+		# Note: All values are case-sensitive, setting eofmode to Lf or lf would not work for example
 		if flags is None:
 			self.flags = {
 				"debug": True,        # May tweak certain operations to behave diffrently to test for hidden bugs in the code. Should never be enabled in release versions
 				"hardbuffer": False,  # All data will be written to a local file instead of the system memory. Recommended for servers which receive huge chunks of data at once or have very limited memory available
 				"multibuffer": False, # Enables context-specific buffers with buffersize set to a dictionary
-				"buffersize": None,   # Buffer size is unlimited if set to None. Not recommended for servers with large incoming traffic, as the memory may get exhausted very quickly
+				"buffersize": None,   # Buffer size is unlimited if set to None. Not recommended for servers with large incoming traffic, as the memory may get exhausted very quickly. Must not be None if eofmode is set to Buffered
 				"eofmode": "LF",      # May either be LF (line feed) or Buffered. LF means that the server accepts all incoming data until it finds a line feed termination. Buffered means the server accepts all incoming data until the specified buffer is full
 				"urimode": "D",       # May either be D (directory) or I (indexed). In directory mode, rooturi should point to the root folder of the ressource. In indexed mode, rooturi should point to an index file in the Xserve Parser Index file format (see specifications)
 				"rooturi": os.getcwd(),
@@ -72,8 +73,8 @@ class http():
 	def getdata(self): # Should recieve data from client
 		self.client.settimeout(self.flags["timeout"])
 		self.buffer = streams.datastream(self.flags["hardbuffer"])
-		retriecount = 0
-		while retriecount <= self.flags["retrylimit"]:
+		retrycount = 0
+		while retrycount <= self.flags["retrylimit"]:
 			try:
 				data = self.client.recv(4096)
 				if data:
@@ -85,15 +86,15 @@ class http():
 			except TimeoutError:
 				clnt_srvr("No data in socket after waiting for %s seconds" %self.flags["timeout"])
 				srvr_inf("Checking for existing previous data")
-				if self.data:
-					print(f"Server Info: Data buffer not empty, retry {retriecount} / {retries}")
+				if data:
+					print(f"Server Info: Data buffer not empty, retry {retrycount} / {retries}")
 					continue
 				else:
 					print("Client Error: No data has been sent")
 					return 408
 			print("Server Info: Performing data check")
-			if eofmode == "termination":
-				if b"\r\n\r\n" in self.data or b"\n\n" in self.data:
+			if self.flags["eofmode"] == "LF":
+				if b"\r\n\r\n" in self.buffer or b"\n\n" in self.buffer:
 					print("Client => Server: Received EOF string")
 					return 0
 				if len(self.data) > buffersize:
@@ -119,7 +120,7 @@ class http():
 	def storedata(self, storage): # Should flush a temporary buffer to a constant buffer on drive
 		pass
 
-	def freedata(self): # UnKnown
+	def freedata(self): # OK
 		self.buffer.whipe()
 
 
