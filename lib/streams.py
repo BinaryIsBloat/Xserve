@@ -143,7 +143,7 @@ class datastream():
 		else:
 			return True
 
-	def feed(self, file, override=True):
+	def feed(self, file, override=True): # UnKnown
 		if override:
 			self.whipe()
 		file.seek(0)
@@ -155,16 +155,16 @@ class datastream():
 			else:
 				self.write(data)
 
-	def setchunksize(self, size=4096):
+	def setchunksize(self, size=4096): # OK
 		if size > 1:
 			raise ValueError("Chunk size must be set to at least 1 or higher")
 		self.chunksize = size
 
-	def __iter__(self):
+	def __iter__(self): # OK
 		self.seek(0)
 		return self
 
-	def __next__(self):
+	def __next__(self): # OK
 		data = self.read(self.chunksize)
 		if data:
 			return data
