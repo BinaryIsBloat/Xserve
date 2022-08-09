@@ -149,6 +149,7 @@ class datastream():
 		while True:
 			data = file.read(4096)
 			if data == b"":
+				file.close()
 				return
 			else:
 				self.write(data)
