@@ -115,11 +115,13 @@ class http():
 	def senddata(self): # Should send response data to client
 		pass
 	
-	def returndata(self): # Should return the servers data buffer
+	def returndata(self): # OK
 		return self.buffer
 
 	def storedata(self, storage): # Should flush a temporary buffer to a constant buffer on drive
-		pass
+		self.buffer.seek(0)
+		storage.write(self.buffer.read())
+		storage.close()
 
 	def freedata(self): # OK
 		self.buffer.whipe()

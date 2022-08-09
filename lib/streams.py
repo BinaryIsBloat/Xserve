@@ -142,6 +142,17 @@ class datastream():
 		else:
 			return True
 
+	def feed(self, file, override=True):
+		if override:
+			self.whipe()
+		file.seek(0)
+		while True:
+			data = file.read(4096)
+			if data == b"":
+				return
+			else:
+				self.write(data)
+
 	def index(self, key, start=0, end=None): # UnKnown
 		if start < 0:
 			raise IndexError("Start byte may not be negative")
