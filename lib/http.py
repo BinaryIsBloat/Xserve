@@ -97,10 +97,9 @@ class http():
 				if b"\r\n\r\n" in self.buffer or b"\n\n" in self.buffer:
 					clnt_srvr("Received EOF terminator")
 					return 0
-				if self.flags["buffersize"] is not None:
-					if len(self.buffer) > self.flags["buffersize"]:
-						clnt_err("The data buffer was exhausted before an EOF string was sent")
-						return 413
+				if (self.flags["buffersize"] is not None) and (len(self.buffer) > self.flags["buffersize"]):
+					clnt_err("The data buffer was exhausted before an EOF string was sent")
+					return 413
 				clnt_inf("No EOF string received")
 				clnt_srvr("Expecting further data")
 			elif self.flags["eofmode"] == "Buffered":
@@ -140,10 +139,9 @@ class http():
 			rtime_wrn(message.replace("%W", str(self.wrncount)))
 		else:
 			misc_wrn(message.replace("%W", str(self.wrncount)))
-		if self.warnlimit > -1:
-			if self.warnlimit < self.wrncount:
-				rtime_err("Received more warnings than allowed")
-				raise WarnLimitReached()
+		if (self.warnlimit > -1) and (self.warnlimit < self.wrncount):
+			rtime_err("Received more warnings than allowed")
+			raise WarnLimitReached()
 
 
 	# Exit Functions
