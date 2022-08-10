@@ -1,4 +1,31 @@
-import os, tempfile as tmp
+# LICENSE
+# -----------------------------------------------------------------------------------------------------------------------------------------
+# Copyright 2022 BinaryIsBloat
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+# associated documentation files (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+# IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# -----------------------------------------------------------------------------------------------------------------------------------------
+#
+# A library that makes file objects behave like bytearrays and bytearrays like file objects
+# Streams may be extended upon request for further convenient functions directly built into the data type
+# Streams may also be extended by the end user, as the library is released under the MIT license and may therefore be edited
+# by very much everyone who owns a copy.
+#
+# In hope this library will be of use for you
+#
+# RandomGuyWithoutY
+
+import tempfile as tmp
 
 class datastream():
 	def __init__(self, hard=False): # OK
@@ -11,7 +38,7 @@ class datastream():
 		self.setchunksize()
 		self.setitermode()
 
-	def override(self, hard=False):
+	def override(self, hard=False): # OK
 		if self.hard == hard:
 			return
 		posclone = self.offset
@@ -25,7 +52,7 @@ class datastream():
 		self.hard = hard
 		self.offset = posclone
 
-	def write(self, data, offset=None): # UnKnown
+	def write(self, data, offset=None): # OK
 		if offset is None:
 			offset = self.offset
 		if self.hard:
@@ -36,7 +63,7 @@ class datastream():
 			self.offset = offset + len(data)
 		return self.offset
 
-	def seek(self, offset, whence=0): # UnKnown
+	def seek(self, offset, whence=0): # OK
 		if whence == 0:
 			self.offset = offset
 		elif whence == 1:
@@ -47,10 +74,10 @@ class datastream():
 			raise ValueError("Unknown whence: %s" %whence)
 		return self.offset
 
-	def tell(self): # OK, may conflict with incorrectly set offset by UnKnown functions
+	def tell(self): # OK
 		return self.offset
 
-	def read(self, size=None, startbyte=None, endbyte=None): # UnKnown with dependency _read
+	def read(self, size=None, startbyte=None, endbyte=None): # OK
 		if startbyte is None:
 			startbyte = self.offset
 		received = bytearray(self._read(size, startbyte, endbyte))
