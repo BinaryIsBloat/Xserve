@@ -63,6 +63,10 @@ class datastream():
 			self.offset = offset + len(data)
 		return self.offset
 
+	def append(self, data): # OK
+		self.seek(0, 2)
+		return self.write(data)
+
 	def seek(self, offset, whence=0): # OK
 		if whence == 0:
 			self.offset = offset
