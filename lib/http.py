@@ -74,7 +74,7 @@ class http():
 	# Data Functions
 	def getdata(self): # UnKnown, receives data from client and returns HTTP status code
 		self.client.settimeout(self.flags["timeout"])
-		self.buffer = streams.datastream(self.flags["hardbuffer"])
+		self.buffer.whipe()
 		retrycount = 0
 		while retrycount <= self.flags["retrylimit"]:
 			try:
@@ -113,8 +113,8 @@ class http():
 			clnt_err("Too many retries")
 			return 408
 
-	def senddata(self, stream): # Should send response data to client
-		for chunk in stream:
+	def senddata(self, stream): # OK
+		for chunk in stream(mode="chunk"):
 			self.client.send(chunk)
 
 	def returndata(self): # OK
@@ -128,9 +128,6 @@ class http():
 
 	def freedata(self): # OK
 		self.buffer.whipe()
-
-	def returnstream(self):
-		return self.buffer
 
 
 	# Logging Functions

@@ -266,7 +266,9 @@ class datastream():
 	def __del__(self): # OK
 		self.flush()
 
-	def __call__(self, chunksize=None):
+	def __call__(self, chunksize=None, mode=None):
 		if chunksize is not None:
 			self.setchunksize(chunksize)
+		if mode is not None:
+			self.setitermode(mode)
 		return self
