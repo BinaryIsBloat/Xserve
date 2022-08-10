@@ -24,8 +24,8 @@ class http():
 			raise error
 		self.wrncount = 0
 		self.closed = False
+		self.buffer = streams.datastream()
 		self.setflags()
-		self.buffer = datastream()
 		return
 
 	def setflags(self, flags=None): # OK, constantly updated
@@ -52,6 +52,7 @@ class http():
 					self.flags[key.lower()] = flags[key]
 				else:
 					rtime_err("The flag '%s' is not valid and has been ignored" %key)
+		self.buffer.convert(self.flags["hardbuffer"])
 
 
 	# Connection Functions

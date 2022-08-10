@@ -38,7 +38,7 @@ class datastream():
 		self.setchunksize()
 		self.setitermode()
 
-	def override(self, hard=False): # OK
+	def convert(self, hard=False): # OK
 		if self.hard == hard:
 			return
 		posclone = self.offset
