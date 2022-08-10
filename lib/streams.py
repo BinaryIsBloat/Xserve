@@ -126,6 +126,7 @@ class datastream():
 			del self.stream
 		except:
 			pass
+		self.closed = True
 
 	def endswith(self, string): # UnKnown
 		string = bytes(string)

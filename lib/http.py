@@ -165,7 +165,8 @@ class http():
 			if log:
 				rtime_inf("Ignoring 1 warning on shutdown: operation <server.close>")
 		try:
-			self.buffer.flush(operation="flush", obj="_all") # No buffer module
+			self.buffer.flush()
+			del self.buffer
 		except:
 			if log:
 				rtime_inf("Ignoring 1 error on shutdown: operation <buffer.flush>")
