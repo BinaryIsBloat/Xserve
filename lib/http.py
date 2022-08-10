@@ -25,6 +25,7 @@ class http():
 		self.wrncount = 0
 		self.closed = False
 		self.setflags()
+		self.buffer = datastream()
 		return
 
 	def setflags(self, flags=None): # OK, constantly updated
@@ -120,11 +121,15 @@ class http():
 
 	def storedata(self, storage): # Should flush a temporary buffer to a constant buffer on drive
 		self.buffer.seek(0)
-		storage.write(self.buffer.read())
+		for chunk in self.buffer(mode="chunk"):
+			storage.write(chunk)
 		storage.close()
 
 	def freedata(self): # OK
 		self.buffer.whipe()
+
+	def returnstream(self):
+		return self.buffer
 
 
 	# Logging Functions

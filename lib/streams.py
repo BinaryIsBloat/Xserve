@@ -4,12 +4,26 @@ class datastream():
 	def __init__(self, hard=False): # OK
 		self.hard = hard
 		if self.hard:
-			self.stream = tmp.TemporaryFile(suffix=".xserver-buffer")
+			self.stream = tmp.TemporaryFile(suffix=".xstream")
 		else:
 			self.stream = bytearray()
 		self.offset = 0
 		self.setchunksize()
 		self.setitermode()
+
+	def override(self, hard=False):
+		if self.hard == hard:
+			return
+		posclone = self.offset
+		self.seek(0)
+		clone = self.read()
+		if hard:
+			self.stream = tmp.TemporaryFile(suffix=".xstream")
+			self.stream.write(clone)
+		else:
+			self.stream = clone
+		self.hard = hard
+		self.offset = posclone
 
 	def write(self, data, offset=None): # UnKnown
 		if offset is None:
