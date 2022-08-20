@@ -1,2 +1,0 @@
-class WarnLimitReached(Exception):
-	pass

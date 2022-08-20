@@ -1,0 +1,2 @@
+class WarnLimitReached(Exception):
+	pass
