@@ -28,7 +28,7 @@
 import tempfile as tmp
 
 class datastream():
-	def __init__(self, hard=False): # OK
+	def __init__(self, data=b"", hard=False): # OK
 		self.hard = hard
 		if self.hard:
 			self.stream = tmp.TemporaryFile(suffix=".xstream")
@@ -37,6 +37,7 @@ class datastream():
 		self.offset = 0
 		self.setchunksize()
 		self.setitermode()
+		self.write(data)
 
 	def convert(self, hard=False): # OK
 		if self.hard == hard:
@@ -53,6 +54,12 @@ class datastream():
 		self.offset = posclone
 
 	def write(self, data, offset=None): # OK
+		if type(data) == str:
+			data = bytes(data, "utf-8")
+		if type(data) == datastream:
+			for chunk in data(mode="chunked"):
+				self.write(chunk)
+			return self.offset
 		if offset is None:
 			offset = self.offset
 		if self.hard:
@@ -77,6 +84,9 @@ class datastream():
 		else:
 			raise ValueError("Unknown whence: %s" %whence)
 		return self.offset
+
+	def clone(self):
+		return datastream(self, self.hard)
 
 	def tell(self): # OK
 		return self.offset
@@ -207,25 +217,29 @@ class datastream():
 			raise ValueError("Chunk size must be set to at least 1 or higher")
 		self.chunksize = size
 
-	def setitermode(self, mode="chunk"):
-		if mode == "chunk":
-			self.mode = "chunk"
+	def setitermode(self, mode="chunked"):
+		if mode == "chunked":
+			self.mode = "chunked"
 		elif mode == "lined":
 			self.mode = "lined"
 		else:
 			raise ValueError("Unknown iterator mode")
 
 	def __iter__(self): # OK
+		self.oldoffset = self.offset
 		self.seek(0)
-		self.eof = False
+		if self.mode == "lined":
+			self.eof = False
 		return self
 
 	def __next__(self): # OK
-		if self.mode == "chunk":
+		if self.mode == "chunked":
 			data = self.read(self.chunksize)
 			if data:
 				return data
 			else:
+				self.offset = self.oldoffset
+				del self.oldoffset
 				raise StopIteration()
 		elif self.mode == "lined":
 			data = bytearray()
@@ -240,11 +254,13 @@ class datastream():
 				if prevlen == len(data):
 					if self.eof:
 						del self.eof
+						self.offset = self.oldoffset
+						del self.oldoffset
 						raise StopIteration()
 					else:
 						self.eof = True
 						return data
-		else: 
+		else:
 			raise ValueError("Unknown iterator mode")
 
 	def index(self, key, start=0, end=None): # UnKnown

@@ -114,7 +114,8 @@ class http():
 			return 408
 
 	def senddata(self, stream): # OK
-		for chunk in stream(mode="chunk"):
+		for chunk in stream(mode="chunked"):
+			srvr_clnt("Sending %s bytes of data" %len(chunk))
 			self.client.send(chunk)
 
 	def returndata(self): # OK
@@ -122,7 +123,7 @@ class http():
 
 	def storedata(self, storage): # Should flush a temporary buffer to a constant buffer on drive
 		self.buffer.seek(0)
-		for chunk in self.buffer(mode="chunk"):
+		for chunk in self.buffer(mode="chunked"):
 			storage.write(chunk)
 		storage.close()
 
