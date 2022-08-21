@@ -354,9 +354,9 @@ class namedstream(datastream):
 			if file is None:
 				raise ValueError("File path required for named stream object")
 			try:
-				self.stream = open(data, "r+b")
+				self.stream = open(file, "r+b")
 			except FileNotFoundError:
-				self.stream = open(data, "w+b")
+				self.stream = open(file, "w+b")
 			self.stream.write(clone)
 		else:
 			self.stream = clone
