@@ -5,6 +5,7 @@
 
 from xserve.libhttp import http   # The Xserve core API for writing servers that use the HTTP protocol
 from xserve.shared import *
+import os
 
 Server = http()
 
@@ -22,7 +23,7 @@ while True:
 			statusline = Server.parsestatline()
 		except MalformedRequestTriplet:
 			try:
-				ResponseBody = namedstream(file="./HTML/Errors/400.html")
+				ResponseBody = namedstream(file=os.path.abspath("./HTML/Errors/400.html"))
 				ResponseHeader = bytes("HTTP/1.1 400 Bad Request\r\nContent-Length: %s\r\nContent-Type: text/html\r\nServer: Xserve1\r\n\r\n" %len(ResponseBody), "ascii")
 				Server.senddata(ResponseHeader, ResponseBody)
 			except ConnectionResetError:
@@ -32,6 +33,6 @@ while True:
 				Server.getdata("LF")
 			except ConnectionResetError:
 				break
-			ResponseBody = namedstream(file="./HTML/default.html")
+			ResponseBody = namedstream(file=os.path.abspath("./HTML/default.html"))
 			ResponseHeader = bytes("HTTP/1.1 200 OK\r\nContent-Length: %s\r\nContent-Type: text/html\r\nServer: Xserve1\r\n\r\n" %len(ResponseBody), "ascii")
 			Server.senddata(ResponseHeader, ResponseBody)
