@@ -32,6 +32,7 @@ class https(http):
 		self.wrncount = 0
 		self.closed = False
 		self.buffer = datastream()
+		self.bffrcache = datastream()
 		self.flags = {}
 		self.setflags()
 		return
