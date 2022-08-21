@@ -1,3 +1,6 @@
+if __name__ == "__main__":
+	raise RuntimeError("This file is a library and may not be run directly")
+
 from sys import stderr
 import time as t
 
@@ -70,3 +73,6 @@ def mem_file(message):
 
 def file_mem(message):
 	base_msg("File => Memory: %s" %message)
+
+def clnt_req(message):
+	base_msg("Client Request: %s" %message)

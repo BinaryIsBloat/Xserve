@@ -27,7 +27,7 @@
 
 import tempfile as tmp
 
-class datastream():
+class datastream:
 	def __init__(self, data=b"", hard=False): # OK
 		self.hard = hard
 		if self.hard:
@@ -53,21 +53,22 @@ class datastream():
 		self.hard = hard
 		self.offset = posclone
 
-	def write(self, data, offset=None): # OK
-		if type(data) == str:
-			data = bytes(data, "utf-8")
-		if type(data) == datastream:
-			for chunk in data(mode="chunked"):
-				self.write(chunk)
-			return self.offset
-		if offset is None:
-			offset = self.offset
-		if self.hard:
-			self.stream.seek(offset)
-			self.offset = self.stream.write(data)
-		else:
-			self.stream[offset:len(data)] = data
-			self.offset = offset + len(data)
+	def write(self, *data, offset=None): # OK
+		for segment in data:
+			if isinstance(segment, str):
+				segment = bytes(segment, "utf-8")
+			elif isinstance(segment, datastream):
+				for chunk in segment(mode="chunked"):
+					self.write(chunk)
+				return self.offset
+			if offset is None:
+				offset = self.offset
+			if self.hard:
+				self.stream.seek(offset)
+				self.offset = self.stream.write(segment)
+			else:
+				self.stream[offset:len(segment)] = segment
+				self.offset = offset + len(segment)
 		return self.offset
 
 	def append(self, data): # OK
@@ -128,6 +129,20 @@ class datastream():
 		else:
 			self.stream.clear()
 		self.offset = 0
+
+	def truncate(self):
+		if self.hard:
+			self.stream.seek(self.offset)
+			self.stream.truncate()
+		else:
+			del self.stream[self.offset:]
+
+	def pop(self):
+		prevoffset = self.offset
+		data = self.read()
+		self.seek(prevoffset)
+		self.truncate()
+		return data
 
 	def flush(self): # OK
 		if self.hard:
@@ -263,6 +278,15 @@ class datastream():
 		else:
 			raise ValueError("Unknown iterator mode")
 
+	def readline(self, silent=False): # UnKnown
+		self.mode = "lined"
+		self.eof = False
+		self.oldoffset = self.__len__()
+		if silent:
+			self.__next__()
+			return
+		return self.__next__()
+
 	def index(self, key, start=0, end=None): # UnKnown
 		if start < 0:
 			raise IndexError("Start byte may not be negative")
@@ -289,3 +313,55 @@ class datastream():
 		if mode is not None:
 			self.setitermode(mode)
 		return self
+
+# class multistream: # Should support multiple data segments in one stream, simmilar to the list type but with Xstreams
+# 	def __init__(self, *data, hard=False):
+# 		self.hard = hard
+# 		if self.hard:
+# 			self.stream = tmp.TemporaryFile(suffix=".xstream")
+# 		else:
+# 			self.stream = bytearray()
+# 		self.selected = 0
+# 		self.offset = 0
+# 		self.setchunksize()
+# 		self.setitermode()
+# 		self.write(data)
+
+class namedstream(datastream):
+	def __init__(self, data=b"", file=None, hard=True): # OK
+		self.hard = hard
+		if self.hard:
+			if file is None:
+				raise ValueError("File path required for named stream object")
+			try:
+				self.stream = open(file, "r+b")
+			except FileNotFoundError:
+				self.stream = open(file, "w+b")
+		else:
+			self.stream = bytearray()
+		self.offset = 0
+		self.setchunksize()
+		self.setitermode()
+		self.write(data)
+
+	def convert(self, file=None, hard=False): # OK
+		if self.hard == hard:
+			return
+		posclone = self.offset
+		self.seek(0)
+		clone = self.read()
+		if hard:
+			if file is None:
+				raise ValueError("File path required for named stream object")
+			try:
+				self.stream = open(data, "r+b")
+			except FileNotFoundError:
+				self.stream = open(data, "w+b")
+			self.stream.write(clone)
+		else:
+			self.stream = clone
+		self.hard = hard
+		self.offset = posclone
+
+	def clone(self, file=None):
+		return namedstream(self, file, self.hard)

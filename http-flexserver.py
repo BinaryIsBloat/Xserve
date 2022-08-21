@@ -3,21 +3,35 @@
 # It has no dependencies aside from the Python standard modules and should run smooth on almost all platforms
 # It should not be used in any production releases without certain modifications, as it has only very limited security features
 
-from lib.http import http        # The Xserve core API for writing servers that use HTTP data
-from lib.streams import datastream
-from lib.console import *
+from xserve.libhttp import http   # The Xserve core API for writing servers that use the HTTP protocol
+from xserve.shared import *
 
 Server = http()
 
-bodydata = "<!DOCTYPE html>\n<html><head><title>Binary is Bloat Xserve 1.0 - 200 OK</title></head><body><center><h1>200 OK</h1><hr>Binary is Bloat Xserve 1.0</center></body></html>"
-replydata = datastream("HTTP/1.1 200 OK\r\nContent-Length: %s\r\n\r\n" %len(bodydata) + bodydata)
-
-serverbuffer = Server.returndata()
+Buffer = Server.returndata()
 
 while True:
 	Server.listen()
-	Server.getdata()
-	for line in serverbuffer(mode="lined"):
-		clnt_srvr(str(line, "oem"))
-	Server.senddata(replydata)
-	Server.close()
+	while True:
+		Server.freedata()
+		try:
+			Server.getdata("SGLF")
+		except ConnectionResetError:
+			break
+		try:
+			statusline = Server.parsestatline()
+		except MalformedRequestTriplet:
+			try:
+				ResponseBody = namedstream(file="./HTML/Errors/400.html")
+				ResponseHeader = bytes("HTTP/1.1 400 Bad Request\r\nContent-Length: %s\r\nContent-Type: text/html\r\nServer: Xserve1\r\n\r\n" %len(ResponseBody), "ascii")
+				Server.senddata(ResponseHeader, ResponseBody)
+			except ConnectionResetError:
+				break
+		else:
+			try:
+				Server.getdata("LF")
+			except ConnectionResetError:
+				break
+			ResponseBody = namedstream(file="./HTML/default.html")
+			ResponseHeader = bytes("HTTP/1.1 200 OK\r\nContent-Length: %s\r\nContent-Type: text/html\r\nServer: Xserve1\r\n\r\n" %len(ResponseBody), "ascii")
+			Server.senddata(ResponseHeader, ResponseBody)
