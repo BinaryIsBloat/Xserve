@@ -1,0 +1,51 @@
+
+
+About Data Constructors
+
+  Data constructors may be considered as blueprints for creating a new instance of a certain data type. The
+  XSERVE_SCRIPT-1 language has data constructors for the BuiltIn types integer, string, list, dictionary, bool,
+  bytes and float. There are also special data types which don't make use of a constructor, such as the version
+  data type. A variation of the data constructor is the context constructor, which may be used to create
+  custom statements, and, as the name suggests, custom context handlers. Data constructors behave simmilar
+  to classes in a way and support a somewhat object-oriented programming pattern. Still, XSERVE_SCRIPT-1
+  is not designed with the intend to be an object-oriented programming language and encourages a more
+  functional approach.
+
+Syntax & Semantics
+
+  # An example of scopes and subtypes of data constructors
+
+  number  -> int				# Normal integer with omited scope
+  number2 -> BuiltIn::int			# Normal integer with included scope
+  number3 -> BuiltIn::int::u32			# Explicit integer of type unsinged 32-bit
+  number4 -> BuiltIn::int::i16			# Explicit integer of type signed 32-bit
+  number5 -> BuiltIn::float::u8			# Explicit floating point number of type unsigned 8-bit
+  number6 -> float::f64				# Explicit floating point number of type signed 64-bit with omited scope
+
+
+  LET new_variable  = int::u32()		# To create a new variable using the data constructor, we must call it like a function
+  LET new_variable2 = int::u32("255")		# This will create an integer with the value 255, converting the string to a number
+  LET new_variable3 = int::u32(-1)		# This will throw an conversion error, because negative numbers require a signed integer to be stored
+  LET new_variable4 = int::u8(256)		# This will also throw an conversion error, because the number 256 is too large to fit into 8 bits
+
+
+  STRUCT int SUBSET BuiltIn::datatype
+  {
+     CONTAIN
+     {
+        binary -> raw
+     }
+
+     SYNTAX
+     {
+        ""
+     }
+
+     SCOPE
+     {
+        FUNCT !new()
+        {
+           
+        }
+     }
+  }

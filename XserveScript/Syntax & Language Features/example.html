@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!XSERVE 1.0 {
+			IF client::request::uri == "/index.html" {
+				htmlstream <- "<title>Hello, %s!</title>" % parent::user::name
+				
+			}
+		}>
+	</head>
+
+</html>

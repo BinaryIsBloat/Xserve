@@ -1,0 +1,36 @@
+The Xserve Parser by RandomGuyWithoutY
+**************************************
+
+Introduction & Purpose:
+
+  The Xserve Parser is an additional component for the Xserve Core package. It is not dependent on the Xserve Core API, making
+  it portable to other software that supports it. Nonetheless both package APIs are extremely simmilar, making it more convenient
+  to implement the Xserve Parser in combination with the Xserve Core package. The Parser has it's very own scripting language
+  which should be updated regularely to support recent security features and web protocols.
+
+
+Instructions:
+
+  Instructions are executed by the parser one-by-one at a time. Instructions may be delimited by semicolon, in which case multiple
+  instructions per line are possible. If no semicolon is present in the line, a new instruction will be assumed after the next line
+  break. Simmilarly to C, the Xserve Parser ignores every whitespace character that is outside of a string.
+
+
+Comments:
+
+  
+
+
+Statements:
+
+  Statements are uppercase, non-delimited instructions in the code which take one or more arguments and are oftentimes followed
+  by nested instructions in curly braces. There are diffrent types of statements available in certain context. The context is
+  usually determined by higher-level statements, such as PROTO or GROUP. Statements may also be defined in external libraries which
+  may be added using the INCLUDE statement. And finally, the context is also dependent on the VERSION statement, which maps the
+  script to a specific standards page where most of the core statements are saved. The syntax works after the following rules:
+
+     STATEMENT argument1, argument2 {
+         ...
+     }
+
+  Statements may also be written with the arguments enclosed in round brackets, though that usually isn't necessary.

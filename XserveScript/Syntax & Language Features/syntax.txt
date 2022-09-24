@@ -1,0 +1,25 @@
+      - The Xserve Script 1 Language Specifications -
+     *************************************************
+        written by RandomGuyWithoutY, Sept 03. 2022
+
+
+
+Introduction
+************
+
+  The Xserve Script 1 programming language is a superset of the BinaryIsBloat "Anarchie" language, therefore making it
+  part of the "Hirarchie" language group developed by the BinaryIsBloat-community. The language is compiled to bytecode
+  and executed by the server software. It is up to the server software to decide which additional libraries it is willing
+  to provide, though the standard library is mandatory as it contains most of the important definitions that allow for
+  writing fast and robust code. The server software also has to emulate the Xserve API in some way, as the scripting
+  language simply behaves like a wrapper for said API. As part of the "Hirarchie" language group, it has a nested context
+  manager which is focused around the virtual file system that serves the URIs and around the diffrent protocols the server
+  should support. The most common protocols are stored in the BuiltIn scope, such as HTTP, HTTPS, FTP, Gopher, etc. Other
+  protocols may be included via external libraries or may be defined locally. URIs may be mapped to exisiting ressources
+  on the file system or they may link to dynamic content. The latter may be achieved through the stream data type, which
+  is also part of the core API. Streams may be created in memory but behave like file objects, therefore they may be used
+  as files on the virtual file system. The most common functions that may be used for dynamic content creation are stored
+  in the standard libary. That includes among others PHP, Python, Server-side HTML and the native Xserve Advanced HTML 1
+  format, which extends the HTML format simmilarly to PHP by adding special comment tags to an HTML file which contain
+  Xserve Script 1-ML instructions (The appended -ML means Markup Language). Said comment tags are written like <!XSERVE 1 {...}>
+  where the curly braces contain the main body of the instruction set.

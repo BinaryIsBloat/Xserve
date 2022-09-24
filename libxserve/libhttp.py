@@ -7,7 +7,7 @@ from .shared import *
 class http:
 	# Initialization Functions
 	def __init__(self, host="127.0.0.1", port=8080): # OK
-		self.addr = (host, port)
+		addr = (host, port)
 		# Create Socket
 		try:
 			self.server = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
@@ -16,12 +16,12 @@ class http:
 			raise sock.error()
 		# Bind Socket
 		try:
-			self.server.bind(self.addr)
+			self.server.bind(addr)
 		except OSError as error: # Unavailable Address
-			srvr_err("Address tuple is not valid on the current machine: %s" %str(self.addr))
+			srvr_err("Address tuple is not valid on the current machine: %s" %str(addr))
 			raise error
 		except sock.gaierror as error: # Invalid Address
-			srvr_err("The address tuple could not be translated to a valid socket address: %s" %str(self.addr))
+			srvr_err("The address tuple could not be translated to a valid socket address: %s" %str(addr))
 			raise error
 		self.wrncount = 0
 		self.closed = False
@@ -29,9 +29,11 @@ class http:
 		self.bffrcache = datastream()
 		self.flags = {}
 		self.setflags()
+		self.server.listen()
+		self.addr = self.server.getsockname()
 		return
 
-	def setflags(self, **flags): # OK, constantly updated
+	def setflags(self, **flags): # OK, updated dynamically
 		# Note: All values are case-sensitive, setting eofmode to Lf or lf would not work for example
 		if flags == {}:
 			self.flags = {
@@ -52,12 +54,14 @@ class http:
 		else:
 			self.flags.update(flags)
 		self.buffer.convert(hard=self.flags["hardbuffer"])
-		self.bffrcache.convert(hard=self.flags["hardbuffer"])
+		# self.bffrcache.convert(hard=self.flags["hardbuffer"])
+
+	def exportflags(self): # OK
+		return self.flags.copy()
 
 
 	# Connection Functions
 	def listen(self): # OK
-		self.server.listen()
 		srvr_inf("Waiting for incoming connections to %s on port %s" %self.addr)
 		self.client, self.clientaddr = self.server.accept()
 		clnt_srvr("Incoming connection from %s on port %s" %self.clientaddr)
@@ -252,67 +256,67 @@ class http:
 
 	# HTTP Status Codes
 	status = {
-		100: "continue",
-		101: "switching_protocols",
-		102: "processing",
-		103: "early_hints",
-		200: "ok",
-		201: "created",
-		202: "accepted",
-		203: "non-authoritative_information",
-		204: "no_content",
-		205: "reset_content",
-		206: "partial_content",
-		207: "multi_status",
-		208: "already_reported",
-		226: "im_used",
-		300: "multiple_choices",
-		301: "moved_permanently",
-		302: "found",
-		303: "see_other",
-		304: "not_modified",
-		305: "use_proxy",
-		306: "switch_proxy",
-		307: "temporary_redirect",
-		308: "permanent_redirect",
-		400: "bad_request",
-		401: "unauthorized",
-		402: "payment_required",
-		403: "forbidden",
-		404: "not_found",
-		405: "method_not_allowed",
-		406: "not_acceptable",
-		407: "proxy_authentication_required",
-		408: "request_timeout",
-		409: "conflict",
-		410: "gone",
-		411: "lenght_required",
-		412: "precondition_failed",
-		413: "payload_too_large",
-		414: "uri_too_long",
-		415: "unsupported_media_type",
-		416: "range_not_satisfiable",
-		417: "expectation_failed",
-		418: "i'm_a_teapot",
-		421: "misdirected_request",
-		422: "unprocessable_entity",
-		423: "locked",
-		424: "failed_dependency",
-		425: "too_early",
-		426: "upgrade_required",
-		428: "precondition_required",
-		429: "too_many_requests",
-		431: "request_header_fields_too_large",
-		451: "unavailable_for_legal_reasons",
-		500: "internal_server_error",
-		501: "not_implemented",
-		502: "bad_gateway",
-		503: "service_unavailable",
-		504: "gateway_timeout",
-		505: "http_version_not_supported",
-		506: "variant_also_negotiates",
-		507: "insufficient_storage",
-		508: "loop_detected",
-		510: "not_extended",
-		511: "network_authentication_required"
+		100: "Continue",
+		101: "Switching Protocols",
+		102: "Processing",
+		103: "Early Hints",
+		200: "OK",
+		201: "Created",
+		202: "Accepted",
+		203: "Non-Authoritative Information",
+		204: "No Content",
+		205: "Reset Content",
+		206: "Partial Content",
+		207: "Multi Status",
+		208: "Already Reported",
+		226: "IM Used",
+		300: "Multiple Choices",
+		301: "Moved Permanently",
+		302: "Found",
+		303: "See Other",
+		304: "Not Modified",
+		305: "Use Proxy",
+		306: "Switch Proxy",
+		307: "Temporary Redirect",
+		308: "Permanent Redirect",
+		400: "Bad Request",
+		401: "Unauthorized",
+		402: "Payment Required",
+		403: "Forbidden",
+		404: "Not Found",
+		405: "Method Not Allowed",
+		406: "Not Acceptable",
+		407: "Proxy Authentication Required",
+		408: "Request Timeout",
+		409: "Conflict",
+		410: "Gone",
+		411: "Lenght Required",
+		412: "Precondition Failed",
+		413: "Payload Too Large",
+		414: "URI Too Long",
+		415: "Unsupported Media Type",
+		416: "Range Not Satisfiable",
+		417: "Expectation Failed",
+		418: "I'm a teapot",
+		421: "Misdirected Request",
+		422: "Unprocessable Entity",
+		423: "Locked",
+		424: "Failed Dependency",
+		425: "Too Early",
+		426: "Upgrade Required",
+		428: "Precondition Required",
+		429: "Too Many Requests",
+		431: "Request Header Fields Too Large",
+		451: "Unavailable For Legal Reasons",
+		500: "Internal Server Error",
+		501: "Not Implemented",
+		502: "Bad Gateway",
+		503: "Service Unavailable",
+		504: "Gateway Timeout",
+		505: "HTTP Version Not Supported",
+		506: "Variant Also Negotiates",
+		507: "Insufficient Storage",
+		508: "Loop Detected",
+		510: "Not Extended",
+		511: "Network Authentication Required"
 	}

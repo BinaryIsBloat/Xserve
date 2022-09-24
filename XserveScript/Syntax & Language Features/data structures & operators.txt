@@ -1,0 +1,93 @@
+Standard Structures:
+********************
+
+    Integer -
+        The Integer data structure is used for storing whole numbers. If no prefix is given, the integer is read as a decimal number.
+
+        Constructor:
+            BuiltIn::integer(<data>, base=<base>)
+
+        Prefixes:
+            0x -
+                Used to represent hexadecimal integers.
+
+            0b -
+                Used to represent binary integers.
+
+            0o -
+                Used to represent octal integers.
+
+            0n/<base>/ -
+                Allows the usage of a custom base which has to be specified as decimal number. The highest possible base is 36.
+
+            0n!/<base>/ -
+                Extended custom base. When using this base, the alphabetic characters are interpreted as case-sensitive. This works by applying
+                the following rule:  numbers  <  lowercase alphabet  <  uppercase alphabet
+                Using case sensitive integer conversion, the highest possible base is 62. It is not recommended using this functionality, as it
+                can hardly influence the code readability for the worse.
+
+
+    String -
+        The String data structure is used for storing escaped text/binary data. If no prefix is given, the string is read as ASCII-formatted
+        binary data. Escape sequences are introduced via the % char. Strings must be surrounded by either single or doublequotes. Prefixes that
+        are one character long must be written in uppercase and multi-character prefixes in capitalized lowercase.
+
+        Constructor:
+            BuiltIn::string(<data>, options=<string prefixes>)
+
+        Prefixes:
+            @ -
+                Converts the string into a path object. The parser will try to open the referenced file and use it as the actual value. Raises
+                an ConversionError if the path is not valid or a StreamReadError if the file may not be read for any reason.
+
+            ! -
+                Tells the parser that the string is a path that points to an absolute direction. Paths marked with this prefix are not bound to
+                the directory defined with the ROOT statement. If the context doesn't allow root escaping, a RootViolation exception is raised.
+
+            U -
+                Indicates a unicode string. If not followed by a number, the version is automatically set to UTF-8. The Unicode version must
+                be valid on the system.
+
+            Json -
+                Indicates a JSON file. Part of the standard library.
+
+
+Complex Structures:
+*******************
+
+    Statement -
+        The Statement is a complex data structure which takes arguments and has an execution body.
+
+
+Standard Operators:
+*******************
+
+    Variable Operations:
+    "="  - Assignment
+
+    Math Operations:
+    "+"  - Addition
+    "-"  - Subtraction
+    "*"  - Multiplication
+    "/"  - Division
+
+    Boolean Operations:
+    "==" - Is Equal
+    "!=" - Is not Equal
+    "<"  - Is Lower
+    ">"  - Is Greater
+    "<=" - Is Lower or Equal
+    ">=" - Is Greater or Equal
+    "|"  - Or
+    "&"  - And
+
+    Stream Operations:
+    "<-" - Stream direction pipe (I)
+    "->" - Stream direction pipe (O)
+
+    Byte Operations:
+    "<<" - Bit shift left
+    ">>" - Bit shift right
+
+    List Operations:
+    ","  - Seperation

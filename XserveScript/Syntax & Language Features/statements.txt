@@ -1,0 +1,269 @@
+General Statements:
+*******************
+
+    VERSION <major>.<minor> -
+        Sets the script version. Must be the first non-comment instruction.
+
+    LET const|mut|imut <reference> = <value> -
+        Assigns a value to a variable. Multiple variables may be defined in a single line by delimiting the references and values
+        with commas. The LET may be followed by either const to create a constant instead of a variable, by mut to create a mutable
+        variable which values may be changed or imut which creates an immutable variable whichs value is fixed. If no option is given,
+        imut is assumed. More detail on this topic may be found in the document 'variables & references.txt'.
+
+    DEL <reference> -
+        Removes variables using the garbage collector.
+
+    PROTO <network-protocol> {...} -
+        Defines the protocol specifications that should be used for all sub-instructions.
+
+    LOG <string> <severity> -
+        Prints a string to the server logs. Severity may be set to 0 (Info), 1 (Warning), 2 (Error) and 3 (Verbose).
+
+    ROOT <directory> -
+        Defines the root directory of the context. All directory references inside this context will be relative to this directory,
+        except for those that have been marked as absolute.
+
+    PYTHON <python-source> <argv> -
+        Executes a Python script. The script file has to contain a main function with an XSERVE_SCRIPT_1 variable, which is a constant
+        passed by the XserveScript interpreter containing all definitions in the XserveScript environment.
+
+
+Library Statements:
+*******************
+
+    INCLUDE <library> IMPORTS <definitions> -> <scope> -
+        Includes definitions from an external library. Library must be provided as string representing the path to the literal file.
+        The IMPORTS statement is optional and may be used to only import specific definitions from the library. The -> operator may
+        be used to import certain definitions into a specific scope instead of into the self scope. Lists and wildcards are allowed,
+        though unenclosed commata will be interpreted as a new library.
+
+    EXPORT <definition> -
+        Exports a definition so that it may be imported via the INCLUDE and USING statement.
+
+    PURGE <library> -
+        Removes all definitions that have been included from the specified library.
+
+    USING <scope> -
+        Imports definitions from a scope directly into the current context. The scope is no longer required if directly imported.
+
+    DROP <scope> -
+        Drops the definitions that have been imported with the USING statement.
+
+
+Macro Statements:
+*****************
+
+    SET <macro> <argv> -
+        Enables a certain compiler/interpreter macro. Macros may affect the safety of your code and change certain language features.
+
+    UNSET <macro> -
+        Disable a certain compiler/interpreter macro.
+
+    MACRO <macro>(<argv>) {...} -
+        The base statement for creating a new compiler macro. Commonly wrapped inside a definition context.
+
+
+Definition Statements:
+**********************
+
+    DEFINE <scope> {...} -
+        Base context for creating a new definition. Definitions function as containers for data types, values, contexts and other
+        definitions. Every nested definition creates a new scope which may be resolved with the scope operator.
+
+    CONTEXT <context-name> PARENT (<parent-context>) {...} -
+        Base context for creating a new context. The CONTEXT statement is supposed to provide an easier wrapper around the more complex
+        statement constructor which is available through STRUCT. The context statement emulates the context behavior of the parent context
+        and therefore differs from the STRUCT approach as no new context data type is created in the process.
+
+    PRIVATE <scope> -
+        Anything in the private scope is only available inside the context of the DEFINE statement. There is no way to access this
+        scope through external calls, such as the INCLUDE, USING or EXPORT statements.
+
+
+Conditional Statements:
+***********************
+
+    IF <condition> {...} ELSIF <condition> {...} ELSE {...} -
+        Checks wether a condition is true or false. The ELSE block is optional and gets executed if the condition is not met. Multiple
+        conditions may be written next to each other by using the ELSIF statement which is an alias for ELSE {IF {...}} and makes the
+        code more readable and visually appealing.
+
+    SWITCH <key> {CASE <key> {...} DEFAULT {...}} -
+        Matches a key against multiple values and run through the specific instructionset if a match is found.
+        If none of the keys match the values, the DEFAULT statement is called.
+
+    Note: Most contexts have their own modified condition constructors which usually have certain advantages over the
+    generalized conditional statements.
+
+
+Exception Statements:
+*********************
+
+    TRY {...} CATCH <exception> {...} ELSE {...} FINALLY {...} -
+        Attempts to run through an instructionset and call the CATCH statement if an error is encountered on
+        runtime. The ELSE statement is called if the TRY statement did not throw any errors on runtime. The
+        FINALLY statement is called no matter what happens or wether the exception is caucht or not.
+
+    THROW <exception> -
+        Throws an exception. If it isn't handled inside a TRY block, the exception will be seen as an error and
+        the program will refuse to proceed.
+
+
+Loop Statements:
+****************
+
+    WHILE <condition> {...} ELSE {...} -
+        Loops through the block of instructions while the condition is true. The ELSE is optional and will only be
+        called if the condition is false. If the loop was closed using a BREAK statement, the ELSE statement will
+        be ignored.
+
+    FOR <variable> IN <iter> {...} ELSE {...} -
+        Runs through the block of instructions until all iterations of the variable have finished. ELSE behaves the
+        same as with the WHILE statement.
+
+    BREAK -
+        Breaks out of the loop.
+
+    CONTINUE -
+        Jumps to the beginning of the loop.
+
+    GOTO <mark> -
+        Jumps to the specified mark.
+
+    MARK <mark> -
+        Creates a mark with the specified name at the position of the statement.
+
+
+Functional Statements:
+**********************
+
+    FUNCT <function-name>(<argv>) {...} -
+        Creates a new function which takes arguments and has local variable definiton.
+
+    CALL <function> <argv> -
+        Calls a function. A wrapper for functions that follows the rules and syntax of a statement.
+
+    RETURN <value> -
+        Returns a value from the function. If no RETURN statement is called at the end of the function, the value
+        is none.
+
+
+Data Constructor Statements:
+****************************
+
+    STRUCT <name> SUBSET <parent-constructor> {...} -
+        The base context for creating a new data constructor. SUBSET is optional and may be used to define properties
+        that should be inherited from other data types.
+
+    CONTAIN {...} -
+        This is the context which contains all data which is encapsulated in the data type. The data type has to be
+        provided for all keys in this context.
+
+    SYNTAX {...} -
+        This context is used to store the syntax features of the data type. This includes operators, statements and other
+        more specific features, such as the short constructor (an example for a short constructor would be the surrounding
+        double quotes for creating new strings). The syntax usually only becomes crucial for the creation of complex structures
+        that require more than the default data type syntax.
+
+    SCOPE {...} -
+        This is the context which contains all public functions and definitions. It is only possible to manipulate data
+        of an object through the functions that have been defined in SCOPE. The SCOPE context must contain a !new function
+        if it has the purpose of a new data type. Purely functional constructors, such as those for statements, don't require
+        this function. The assign function is automatically called as soon as a new variable with this data type is created.
+        Other functions for SCOPE are listed in the 'data constructors.txt' document.
+
+
+Ruleset Statements:
+*******************
+
+    RULESET {...} -
+        The base context that is used to build a new ruleset. Rulesets bind certain instructions to specific file and data
+        types, which is useful for making the virtual file system operate more efficiently and with less code requirement.
+
+    FILESYS {...} -
+        Defines the formatting rules that should be applied to the request URI before it is being mapped to a rule. If no
+        formatting rule returns a path that points to an actual location on the file system, the NotFound violation is
+        triggered.
+
+    RULE <function>, <argv> {...} -
+        Creates a new rule which takes a function alongside user-defined arguments. The rule applies if the function returns
+        true. The function may also return a tuple of values which are subsequently stored in the context scope. In this case,
+        the boolean has to be the first value in the tuple.
+
+    VIOLATION <violation> {...} -
+        The VIOLATION statement implements a form of error handling in the ruleset context. Certain rules may throw exceptions
+        which will be caught by the VIOLATION statements.
+
+
+Permission Statements:
+**********************
+
+    GROUP <group> {...} -
+        Defines special values and permissions for a specific group of users.
+
+    USER <user> {...} -
+        Defines special values and permissions for a specific user.
+
+
+HTTP Statements:
+****************
+
+    HOST <hostname> {...} -
+        Maps the client host header to a server ressource. If no host is found, the ERROR 404 statement is called.
+
+    URI <uri> {...} -
+        Maps the client request header to a server ressource. If the URI is invalid, the ERROR 404 statement for
+        the current tree is called.
+
+    DIR <uri> {...} -
+        Defines the properties for all sub-URIs of this URI. Should be used for all dynamic content or for large
+        amounts of data which have simmilar URI rulesets.
+
+    ERROR <XXX> {...} -
+        The URI properties that are called if the error code XXX is encountered.
+
+
+FTP Statements:
+***************
+
+    FILE <uri> {...} -
+        Represents a file on the virtual file system.
+
+    DIR <uri> {...} -
+        Represents a directory on the virtual file system. Behaves simmilar to the DIR-statement from the HTTP standard.
+
+    LINK <uri> {...} -
+        Represents a symbolic link on the virtual file system.
+
+    ERROR <XXX> {...} -
+        The FTP properties that are called if the error code XXX is encountered.
+
+
+Gopher Statements:
+******************
+
+    URI <uri> {...} -
+        Maps the client request to a server ressource.
+
+    ERROR <XXX> {...} -
+        The Gopher properties that are called if the error code XXX is encountered.
+
+
+DNS Statements:
+***************
+
+    ZONE <type> <zone-file> -
+        Reads values from a zone file.
+
+
+IMAP Statements:
+****************
+
+    MAIL <uri> {...} -
+        Represents a mail on the virtual file system.
+
+    FOLDER <uri> {...} -
+        Represents a mail folder on the virtual file system.
+
+    MBOX <uri> {...} -
+        Represents a mail box on the virtual file system.

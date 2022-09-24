@@ -6,7 +6,7 @@ import ssl
 
 class https(http):
 	def __init__(self, sslkeychain=None, sslprivatekey=None, host="127.0.0.1", port=8443):
-		self.addr = (host, port)
+		addr = (host, port)
 		try:
 			baseserver = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
 		except sock.error:
@@ -22,12 +22,12 @@ class https(http):
 		self.server = context.wrap_socket(baseserver, server_side=True)
 
 		try:
-			self.server.bind(self.addr)
+			self.server.bind(addr)
 		except OSError as error:
-			srvr_err("Address tuple is not valid on the current machine: %s" %str(self.addr))
+			srvr_err("Address tuple is not valid on the current machine: %s" %str(addr))
 			raise error
 		except sock.gaierror as error:
-			srvr_err("The address tuple could not be translated to a valid socket address: %s" %str(self.addr))
+			srvr_err("The address tuple could not be translated to a valid socket address: %s" %str(addr))
 			raise error
 		self.wrncount = 0
 		self.closed = False
@@ -35,10 +35,11 @@ class https(http):
 		self.bffrcache = datastream()
 		self.flags = {}
 		self.setflags()
+		self.server.listen()
+		self.addr = self.server.getsockname()
 		return
 
 	def listen(self): # OK
-		self.server.listen()
 		srvr_inf("Waiting for incoming connections to %s on port %s" %self.addr)
 		try:
 			self.client, self.clientaddr = self.server.accept()

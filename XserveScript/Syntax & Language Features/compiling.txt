@@ -1,0 +1,9 @@
+Binary Blocks
+*************
+
+Block #00000
+--------------------------
+00000-00016: "XSERVE" + 0x00 + "COMPILED" + 0x00 + "BINARY"
+00016-00019: Major Version + Minor Version + Compiler Version
+00019-00062: "This file depends on the Xserve Core Package and may not be run directly!"
+--------------------------

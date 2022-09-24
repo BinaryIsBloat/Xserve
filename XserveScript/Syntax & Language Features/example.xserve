@@ -1,0 +1,79 @@
+# Example for an index file in the XSERVE_SCRIPT-1 format
+VERSION 1.0
+INCLUDE BuiltIn::stdlib
+
+IF BuiltIn.server.name == 'xserve' {
+	INCLUDE XserveAPI.[http, ftp, gopher]
+}
+
+FUNCT StripExt(*string) {
+	RETURN string.iter(BuiltIn::string).basename
+}
+
+PROTO BuiltIn::HTTP, BuiltIn::HTTPS {
+	HOST 'www.myawesomewebsite.com' {
+		ROOT './root'
+
+		TREE '/' {
+			INCLUDE '/DataBase/permissions.db', !'C:\Users\WebDev\Documents\Xserve\MyAwesomeWebsite\DataBase\users.db'
+			GROUP std::RootUser {
+				LOG 'Logon from root user ' + MasterEnv.user
+				methods: 'GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'DELETE'
+			}
+			GROUP std::Guest {
+				methods: 'GET', 'HEAD', 'OPTIONS'
+			}
+			USER usr::WebsiteOwner {
+				LOG 'Logon from the owner'
+				uriinclude: '*.xserve'
+			}
+			mime: 'text/html'
+			uriexclude: '*.xserve'
+			uriinclude: '*.html', '*.php', @stdlib::mime::image::ext
+			uriformat: {
+				'*.html': '*/',
+				'*.php': '*.php',
+				'*.xserve': '/xserve-filesystem/*'
+			}
+		}
+
+		ERROR 400 {
+			location: '/error/400.html'
+		}
+		ERROR 500 {
+			abslocation: 'C:\Users\WebDev\Documents\Xserve\MyAwesomeWebsite\error\500.html'
+		}
+		URI '/', '/index.html' {
+			location: '/index.html'
+		}
+		URI '/welcome.html' {
+			status: 301
+			href: 'https://welcome.myawesomewebsite.com/'
+			data: 
+		}
+	}
+
+
+	HOST 'welcome.myawesomewebsite.com' {
+		ROOT './welcome'
+
+		URI '/', '/index.html' {
+			location
+		}
+	}
+}
+
+PROTO BuiltIn::DNS {
+	
+
+
+}
+
+PROTO BuiltIn::FTP, BuiltIn::FTPS {
+
+}
+
+FUNCT HTTP-Error-301() {
+	data
+	RETURN data
+}

@@ -26,6 +26,7 @@
 # RandomGuyWithoutY
 
 import tempfile as tmp
+import os
 
 class datastream:
 	def __init__(self, data=b"", hard=False): # OK
@@ -49,6 +50,7 @@ class datastream:
 			self.stream = tmp.TemporaryFile(suffix=".xstream")
 			self.stream.write(clone)
 		else:
+			self.stream.close()
 			self.stream = clone
 		self.hard = hard
 		self.offset = posclone
@@ -328,15 +330,16 @@ class datastream:
 # 		self.write(data)
 
 class namedstream(datastream):
-	def __init__(self, data=b"", file=None, hard=True): # OK
+	def __init__(self, data=b"", name=None, hard=True): # OK
 		self.hard = hard
+		self.name = name
+		if self.name is None:
+			raise ValueError("Name required for named stream object")
 		if self.hard:
-			if file is None:
-				raise ValueError("File path required for named stream object")
 			try:
-				self.stream = open(file, "r+b")
+				self.stream = open(self.name, "r+b")
 			except FileNotFoundError:
-				self.stream = open(file, "w+b")
+				self.stream = open(self.name, "w+b")
 		else:
 			self.stream = bytearray()
 		self.offset = 0
@@ -344,24 +347,29 @@ class namedstream(datastream):
 		self.setitermode()
 		self.write(data)
 
-	def convert(self, file=None, hard=False): # OK
+	def convert(self, hard=False): # OK
 		if self.hard == hard:
 			return
 		posclone = self.offset
 		self.seek(0)
 		clone = self.read()
 		if hard:
-			if file is None:
-				raise ValueError("File path required for named stream object")
 			try:
-				self.stream = open(file, "r+b")
+				self.stream = open(self.name, "r+b")
 			except FileNotFoundError:
-				self.stream = open(file, "w+b")
+				self.stream = open(self.name, "w+b")
 			self.stream.write(clone)
 		else:
+			self.stream.seek(0)
+			self.stream.truncate()
+			self.stream.close()
+			os.remove(self.stream.name)
 			self.stream = clone
 		self.hard = hard
 		self.offset = posclone
 
-	def clone(self, file=None):
-		return namedstream(self, file, self.hard)
+	def clone(self, name=None):
+		return namedstream(self, name, self.hard)
+
+	def __str__(self):
+		return f"<Xtraordinary Named Stream (name={self.name}, byteoffset={self.offset}, lenght={self.__len__()}, has_data={self.__bool__()}, is_hard={self.hard}, chunk_size={self.chunksize}, iterator_mode={self.mode})>"
