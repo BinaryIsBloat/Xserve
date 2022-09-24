@@ -1,6 +1,6 @@
 # The HTTPS clone of the original http flexserver
-from xserve.libhttps import https   # The Xserve core API for writing servers that use the HTTP protocol plus SSL
-from xserve.shared import *
+from libxserve.libhttps import https   # The Xserve core API for writing servers that use the HTTP protocol plus SSL
+from libxserve.shared import *
 
 Server = https("./server.pem")
 
