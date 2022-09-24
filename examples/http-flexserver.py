@@ -3,8 +3,8 @@
 # It has no dependencies aside from the Python standard modules and should run smooth on almost all platforms
 # It should not be used in any production releases without certain modifications, as it has only very limited security features
 
-from xserve.libhttp import http   # The Xserve core API for writing servers that use the HTTP protocol
-from xserve.shared import *
+from libxserve.libhttp import http   # The Xserve core API for writing servers that use the HTTP protocol
+from libxserve.shared import *
 import os
 
 Server = http()
