@@ -1,7 +1,5 @@
-if __name__ == "__main__":
-	raise RuntimeError("This file is a library and may not be run directly")
-
-import socket as sock, os 
+import socket
+import os
 from .shared import *
 
 class http:
@@ -10,17 +8,17 @@ class http:
 		addr = (host, port)
 		# Create Socket
 		try:
-			self.server = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-		except sock.error:
+			self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		except socket.error:
 			srvr_err("Failed to create socket")
-			raise sock.error()
+			raise socket.error()
 		# Bind Socket
 		try:
 			self.server.bind(addr)
 		except OSError as error: # Unavailable Address
 			srvr_err("Address tuple is not valid on the current machine: %s" %str(addr))
 			raise error
-		except sock.gaierror as error: # Invalid Address
+		except socket.gaierror as error: # Invalid Address
 			srvr_err("The address tuple could not be translated to a valid socket address: %s" %str(addr))
 			raise error
 		self.wrncount = 0

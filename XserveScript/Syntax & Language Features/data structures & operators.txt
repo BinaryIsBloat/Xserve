@@ -1,62 +1,74 @@
 Standard Structures:
 ********************
 
-    Integer -
-        The Integer data structure is used for storing whole numbers. If no prefix is given, the integer is read as a decimal number.
+Integer -
+   Description:
+    The Integer data structure is used for storing whole numbers. If no prefix is given, the integer is read as a decimal number.
 
-        Constructor:
-            BuiltIn::integer(<data>, base=<base>)
+   Constructor:
+    BuiltIn::int(<data>, base=<base>)
 
-        Prefixes:
-            0x -
-                Used to represent hexadecimal integers.
+   Syntax:
+    0123456789 -
+      Used to represent decimal integers
 
-            0b -
-                Used to represent binary integers.
+    0x0123456789ABCDEF -
+      Represents a hexadecimal integer. Valid number range is 0 to 9 and A to F. Letters are not case sensitive, meaning
+      a to f = A to F.
 
-            0o -
-                Used to represent octal integers.
+    0b10 -
+      Represents a binary integer. Valid number range is 0 to 1.
 
-            0n/<base>/ -
-                Allows the usage of a custom base which has to be specified as decimal number. The highest possible base is 36.
+    0o01234567 -
+      Represents an octal integer. Valid number range is 0 to 7.
 
-            0n!/<base>/ -
-                Extended custom base. When using this base, the alphabetic characters are interpreted as case-sensitive. This works by applying
-                the following rule:  numbers  <  lowercase alphabet  <  uppercase alphabet
-                Using case sensitive integer conversion, the highest possible base is 62. It is not recommended using this functionality, as it
-                can hardly influence the code readability for the worse.
+    0n/<base>/0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHUJKLMNOPQRSTUVWXYZ -
+      Represents an integer with a user-defined base. The base has to be written as decimal integer. The highest conventional
+      base is 36. If the base is higher than 36, the number range will be extended by activating case sensitive mode, where
+      a to z < A to Z. If the base is higher than 62 or lower than 2, the compiler will throw an InvalidValueError.
+
+   Scope:
 
 
-    String -
-        The String data structure is used for storing escaped text/binary data. If no prefix is given, the string is read as ASCII-formatted
-        binary data. Escape sequences are introduced via the % char. Strings must be surrounded by either single or doublequotes. Prefixes that
-        are one character long must be written in uppercase and multi-character prefixes in capitalized lowercase.
+Float -
+   Description:
+    The Float data structure is used for
 
-        Constructor:
-            BuiltIn::string(<data>, options=<string prefixes>)
 
-        Prefixes:
-            @ -
-                Converts the string into a path object. The parser will try to open the referenced file and use it as the actual value. Raises
-                an ConversionError if the path is not valid or a StreamReadError if the file may not be read for any reason.
+String -
+   Description:
+    The String data structure is used for storing escaped text/binary data. If no prefix is given, the string is read as ASCII-formatted
+    binary data. Escape sequences are introduced via the % char. Strings must be surrounded by either single or doublequotes. Prefixes that
+    are one character long must be written in uppercase and multi-character prefixes in capitalized lowercase.
 
-            ! -
-                Tells the parser that the string is a path that points to an absolute direction. Paths marked with this prefix are not bound to
-                the directory defined with the ROOT statement. If the context doesn't allow root escaping, a RootViolation exception is raised.
+   Constructor:
+    BuiltIn::string(<data>, options=<string prefixes>)
 
-            U -
-                Indicates a unicode string. If not followed by a number, the version is automatically set to UTF-8. The Unicode version must
-                be valid on the system.
+   Syntax:
+     @"" -
+      Converts the string into a path object. The parser will try to open the referenced file and use it as the actual value. Raises
+            an ConversionError if the path is not valid or a StreamReadError if the file may not be read for any reason.
 
-            Json -
-                Indicates a JSON file. Part of the standard library.
+        !"" -
+            Tells the parser that the string is a path that points to an absolute direction. Paths marked with this prefix are not bound to
+            the directory defined with the ROOT statement. If the context doesn't allow root escaping, a RootViolation exception is thrown.
+
+        U<version>"" -
+            Indicates a unicode string. If not followed by a number, the version is automatically set to UTF-8. The Unicode version must
+            be valid on the system.
+
+        Json"" -
+            Indicates a JSON file. Part of the standard library.
+
+    Array -
+        The Array data structure is used for storing multiple diffrent data structures.
 
 
 Complex Structures:
 *******************
 
     Statement -
-        The Statement is a complex data structure which takes arguments and has an execution body.
+    The Statement is a complex data structure which takes arguments and has an execution body.
 
 
 Standard Operators:

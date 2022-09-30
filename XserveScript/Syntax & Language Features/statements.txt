@@ -1,14 +1,19 @@
+###  A N A R C H Y   B A S E   L A N G U A G E  ###
+
 General Statements:
 *******************
 
     VERSION <major>.<minor> -
         Sets the script version. Must be the first non-comment instruction.
 
-    LET const|mut|imut <reference> = <value> -
+    LET const|mut|fixed <reference> = <value> -> <data-type> -
         Assigns a value to a variable. Multiple variables may be defined in a single line by delimiting the references and values
         with commas. The LET may be followed by either const to create a constant instead of a variable, by mut to create a mutable
-        variable which values may be changed or imut which creates an immutable variable whichs value is fixed. If no option is given,
-        imut is assumed. More detail on this topic may be found in the document 'variables & references.txt'.
+        variable which values may be changed or fixed which creates an immutable variable. If no option is given, fixed is assumed.
+        The data type declaration is optional but may be used to explicitly set the data structure of the variable. It is also possible
+        to only set the data type and define the value elsewhere. In this case, the variable can only be mut or fixed. If it is defined
+        as fixed, the next assignment will be responsible for setting the definitive value of the variable.
+    See also: "variables & references.txt", "data structures & operators.txt"
 
     DEL <reference> -
         Removes variables using the garbage collector.
@@ -22,10 +27,6 @@ General Statements:
     ROOT <directory> -
         Defines the root directory of the context. All directory references inside this context will be relative to this directory,
         except for those that have been marked as absolute.
-
-    PYTHON <python-source> <argv> -
-        Executes a Python script. The script file has to contain a main function with an XSERVE_SCRIPT_1 variable, which is a constant
-        passed by the XserveScript interpreter containing all definitions in the XserveScript environment.
 
 
 Library Statements:
@@ -53,14 +54,15 @@ Library Statements:
 Macro Statements:
 *****************
 
-    SET <macro> <argv> -
-        Enables a certain compiler/interpreter macro. Macros may affect the safety of your code and change certain language features.
+    SET <macro>(<argv>) -
+        Enables a certain compiler macro. Macros tweak the way the compiler operates and may be used to change the default settings
+        for certain contexts. Macros should be set carefully, as they may affect the safety of your code.
 
     UNSET <macro> -
-        Disable a certain compiler/interpreter macro.
+        Disable/reset a certain compiler macro.
 
     MACRO <macro>(<argv>) {...} -
-        The base statement for creating a new compiler macro. Commonly wrapped inside a definition context.
+        The base statement for creating a new compiler macro.
 
 
 Definition Statements:
@@ -99,26 +101,27 @@ Conditional Statements:
 Exception Statements:
 *********************
 
-    TRY {...} CATCH <exception> {...} ELSE {...} FINALLY {...} -
+    TRY {...} CATCH <exception> {...} NOERR {...} FINALLY {...} -
         Attempts to run through an instructionset and call the CATCH statement if an error is encountered on
-        runtime. The ELSE statement is called if the TRY statement did not throw any errors on runtime. The
+        runtime. The NOERR statement is called if the TRY statement did not throw any errors on runtime. The
         FINALLY statement is called no matter what happens or wether the exception is caucht or not.
 
-    THROW <exception> -
+    THROW <exception>(<argv>) -
         Throws an exception. If it isn't handled inside a TRY block, the exception will be seen as an error and
-        the program will refuse to proceed.
+        the program will refuse to proceed. Arguments are optional and may be used to provide additional information
+        about the exception.
 
 
 Loop Statements:
 ****************
 
-    WHILE <condition> {...} ELSE {...} -
-        Loops through the block of instructions while the condition is true. The ELSE is optional and will only be
-        called if the condition is false. If the loop was closed using a BREAK statement, the ELSE statement will
-        be ignored.
+    WHILE <condition> {...} NOBREAK {...} -
+        Loops through the block of instructions while the condition is true. The NOBREAK block is optional and will
+        only be called if the condition is false. If the loop was closed using a BREAK statement, the NOBREAK statement
+        will be ignored.
 
-    FOR <variable> IN <iter> {...} ELSE {...} -
-        Runs through the block of instructions until all iterations of the variable have finished. ELSE behaves the
+    FOR <variable> IN <iter> {...} NOBREAK {...} -
+        Runs through the block of instructions until all iterations of the variable have finished. NOBREAK behaves the
         same as with the WHILE statement.
 
     BREAK -
@@ -137,11 +140,14 @@ Loop Statements:
 Functional Statements:
 **********************
 
-    FUNCT <function-name>(<argv>) {...} -
-        Creates a new function which takes arguments and has local variable definiton.
+    FUNCT static|caller <function-name>(<argv>) {...} -
+        Creates a new function which takes arguments and has local variable definiton. If the funtion is declared as
+        static, it does not take any arguments and does not require any () to be called. By default, the function is
+        declared as caller function which takes arguments and is called via the () parameters.
 
-    CALL <function> <argv> -
-        Calls a function. A wrapper for functions that follows the rules and syntax of a statement.
+    CALL <function>(<argv>) -
+        Calls a function. A wrapper for functions that follows the rules and syntax of a statement. The () are optional
+        and may be used to pass arguments to the function.
 
     RETURN <value> -
         Returns a value from the function. If no RETURN statement is called at the end of the function, the value
@@ -173,6 +179,18 @@ Data Constructor Statements:
         Other functions for SCOPE are listed in the 'data constructors.txt' document.
 
 
+
+###  X S E R V E   B A S E   A P I  ###
+
+Convenience Statements:
+***********************
+
+    PYTHON <python-source> <entry-function>(<argv>) -
+        Executes a Python script. The entry function is optional and may be used to pass current environment variables to
+        the Python script. If the entry function is specified, the server will only execute this function and will close
+        the statement as soon as the function returns.
+
+
 Ruleset Statements:
 *******************
 
@@ -183,12 +201,18 @@ Ruleset Statements:
     FILESYS {...} -
         Defines the formatting rules that should be applied to the request URI before it is being mapped to a rule. If no
         formatting rule returns a path that points to an actual location on the file system, the NotFound violation is
-        triggered.
+        triggered. The FILESYS block stores it's results in the filesys::uri scope. The original request is available through
+        the client::request::uri scope.
+    See also: "requests & responses.txt", "file systems & streams.txt"
 
-    RULE <function>, <argv> {...} -
-        Creates a new rule which takes a function alongside user-defined arguments. The rule applies if the function returns
-        true. The function may also return a tuple of values which are subsequently stored in the context scope. In this case,
-        the boolean has to be the first value in the tuple.
+    RULE <function>(<argv>) <- <array>, <selector> {...} -
+        Creates a new rule. Rules are blocks that get executed if the first value returned by the function is true. The <- operator
+        is optional and may be used to define wildcards. The selector is also optional and may be used to change the return value
+        that triggers the RULE block.
+
+    EXTEND -
+        Declares the ruleset not complete. If this statement is encountered inside a RULE block, lazy evaluation is switched off
+        and the ruleset proceeds matching rules to the file system until a block without EXTEND is executed.
 
     VIOLATION <violation> {...} -
         The VIOLATION statement implements a form of error handling in the ruleset context. Certain rules may throw exceptions
@@ -204,6 +228,9 @@ Permission Statements:
     USER <user> {...} -
         Defines special values and permissions for a specific user.
 
+
+
+###  X S E R V E   P R O T C O L   A P I  ###
 
 HTTP Statements:
 ****************

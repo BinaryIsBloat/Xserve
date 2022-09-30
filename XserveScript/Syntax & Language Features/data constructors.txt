@@ -23,10 +23,12 @@ Syntax & Semantics
   number6 -> float::f64				# Explicit floating point number of type signed 64-bit with omited scope
 
 
-  LET new_variable  = int::u32()		# To create a new variable using the data constructor, we must call it like a function
-  LET new_variable2 = int::u32("255")		# This will create an integer with the value 255, converting the string to a number
-  LET new_variable3 = int::u32(-1)		# This will throw an conversion error, because negative numbers require a signed integer to be stored
-  LET new_variable4 = int::u8(256)		# This will also throw an conversion error, because the number 256 is too large to fit into 8 bits
+  LET new_variable  =  int::u32()		# To create a new variable using the data constructor, we must call it like a function
+  LET new_variable2 =  int::u32("255")		# This will create an integer with the value 255, converting the string to a number
+  LET new_variable3 =  int::u32(-1)		# This will throw an conversion error, because negative numbers require a signed integer to be stored
+  LET new_variable4 =  int::u8(256)		# This will also throw an conversion error, because the number 256 is too large to fit into 8 bits
+  LET new_variable5 -> int::u8			# This will only declare the type of the variable, but not assign any value to it
+  LET new_variable6 =  "1" -> int::u16		# This will explicitly declare the type of the variable as unsigned 16-bit and try to assign it the value "1" by looking up the syntax block in the data constructor
 
 
   STRUCT int SUBSET BuiltIn::datatype

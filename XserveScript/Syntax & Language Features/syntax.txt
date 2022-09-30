@@ -21,5 +21,5 @@ Introduction
   as files on the virtual file system. The most common functions that may be used for dynamic content creation are stored
   in the standard libary. That includes among others PHP, Python, Server-side HTML and the native Xserve Advanced HTML 1
   format, which extends the HTML format simmilarly to PHP by adding special comment tags to an HTML file which contain
-  Xserve Script 1-ML instructions (The appended -ML means Markup Language). Said comment tags are written like <!XSERVE 1 {...}>
+  Xserve Script 1-ML instructions (The appended -ML means Markup Language). Said comment tags are written like <!XSERVE version="1.0" {...}>
   where the curly braces contain the main body of the instruction set.

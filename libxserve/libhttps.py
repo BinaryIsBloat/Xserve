@@ -1,17 +1,17 @@
-if __name__ == "__main__":
-	raise RuntimeError("This file is a library and may not be run directly")
-
-from .libhttp import *
+import socket
+import os
 import ssl
+from .shared import *
+from .libhttp import *
 
 class https(http):
 	def __init__(self, sslkeychain=None, sslprivatekey=None, host="127.0.0.1", port=8443):
 		addr = (host, port)
 		try:
-			baseserver = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-		except sock.error:
+			baseserver = socket.socket(sock.AF_INET, sock.SOCK_STREAM)
+		except socket.error as error:
 			srvr_err("Failed to create socket")
-			raise sock.error()
+			raise error
 
 		# SSL Initialization
 		if sslkeychain is None:
@@ -26,7 +26,7 @@ class https(http):
 		except OSError as error:
 			srvr_err("Address tuple is not valid on the current machine: %s" %str(addr))
 			raise error
-		except sock.gaierror as error:
+		except socket.gaierror as error:
 			srvr_err("The address tuple could not be translated to a valid socket address: %s" %str(addr))
 			raise error
 		self.wrncount = 0
